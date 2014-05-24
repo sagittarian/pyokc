@@ -1,32 +1,24 @@
-from time import clock, sleep
+from time import clock
 import requests
-try:
-    from pyokc.settings import DELAY
-except ImportError:
-    from settings import DELAY
+
+from utils import sleep
 
 class Session(requests.Session):
     def __init__(self):
         super().__init__()
-        clock()
-        self.timestamp = -DELAY
-        
+
     def post(self, *args, **kwargs):
-        while clock() - self.timestamp < DELAY:
-            pass
-        self.timestamp = clock()
+        sleep()
         response = super().post(*args, **kwargs)
         response.raise_for_status()
         return response
-        
+
     def get(self, *args, **kwargs):
-        while clock() - self.timestamp < DELAY:
-            pass
-        self.timestamp = clock()
+        sleep()
         response = super().get(*args, **kwargs)
         response.raise_for_status()
         return response
-        
+
 class MessageThread:
     """
     Represent a sequence of messages between the main user and
@@ -50,19 +42,19 @@ class MessageThread:
         self.unread = unread
         self.messages = []
         self._direction = direction
-                    
+
     def __repr__(self):
         if self.unread:
             unread_string = 'Unread'
         else:
             unread_string = 'Read'
         return '<{0} message {1} {2}>'.format(unread_string, self._direction, self.sender)
-        
+
 class Question:
     def __init__(self, text, user_answer, explanation):
         self.text = text
         self.user_answer = user_answer
         self.explanation = explanation
-       
+
     def __repr__(self):
         return '<Question: {0}>'.format(self.text)
