@@ -3,15 +3,15 @@ from lxml import html
 try:
     from pyokc import helpers
     from pyokc import magicnumbers
-    from pyokc.objects import MessageThread, Question, Session
+    from pyokc.objects import MessageThread, Question, Session, Jsonifiable
     from pyokc.settings import USERNAME, PASSWORD
 except ImportError:
     import helpers
     import magicnumbers
-    from objects import MessageThread, Question, Session
+    from objects import MessageThread, Question, Session, Jsonifiable
     from settings import USERNAME, PASSWORD
 
-class User:
+class User(Jsonifiable):
     """
     Represent an OKCupid user. Username and password are only optional
     if you have already filled in your username and password in
@@ -350,7 +350,7 @@ class User:
                 'low': 1 + question_number,
                 }
             get_questions = self._session.post(
-            'http://www.okcupid.com/profile/{0}/questions'.format(self.username),
+                'http://www.okcupid.com/profile/{0}/questions'.format(self.username),
             data=questions_data)
             tree = html.fromstring(get_questions.content.decode('utf8'))
             next_wrapper = tree.xpath("//li[@class = 'next']")
@@ -469,7 +469,7 @@ class User:
     def __str__(self):
         return '<User {0}>'.format(self.username)
 
-class Profile:
+class Profile(Jsonifiable):
     """
     Represent another user on OKCupid. You should not initialize these
     on their own. Instead, User.search() returns a list of Profile
